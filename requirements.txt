@@ -3,3 +3,4 @@ Werkzeug==1.0.1
 pickle-mixin
 fido2
 pyodbc
+cryptography

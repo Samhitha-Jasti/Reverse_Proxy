@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Student authentication</h1>
+
+<form action="/otpcheck" method="post">
+  <label for="fname">OTP:</label>
+  <input type="text" id="otp" name="otp"><br><br>
+  <input type="hidden" id="t1" name="t1" value="{{token1}}">
+  <input type="hidden" id="t2" name="t2" value="{{token2}}">
+  <input type="submit" value="Submit">
+</form>
+
+</body>
+</html>

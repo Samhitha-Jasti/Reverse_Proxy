@@ -4,20 +4,25 @@ from fido2.client import ClientData
 from fido2.server import Fido2Server
 from fido2.ctap2 import AttestationObject, AuthenticatorData
 from fido2 import cbor
+from cryptography.fernet import Fernet
 from flask import *
 from sqltasks import *
+from otp import *
 import pickle
 import string
 import random
 import os
 
-url="reverseproxy.eastus.cloudapp.azure.com"
+url="localhost"
 app = Flask(__name__, static_url_path="")
 app.secret_key = os.urandom(32)  # Used for session.
 
 rp = PublicKeyCredentialRpEntity(url, "Demo server")
 server = Fido2Server(rp)
-
+key1=Fernet.generate_key()
+key2=Fernet.generate_key()
+f1=Fernet(key1)
+f2=Fernet(key2)
 credentials = []
 
 @app.route("/")
@@ -31,10 +36,17 @@ def reg():
 @app.route("/reginit", methods=["POST"])
 def reginit():
 	rnum=request.form['rnum']
+	rnum=rnum.strip()
+	o=genOtp()
+	em=getEmail(rnum)
 	print(rnum)
-	resp = make_response(render_template('register.html',rnum=rnum))
-	resp.set_cookie('rnum',rnum,max_age=60*60*24*365*8)
-	return resp
+	print(o)
+	print(em)
+	t1=f1.encrypt(rnum.encode()).decode()
+	t2=f2.encrypt(o.encode()).decode()
+	print(t1)
+	print(t2)
+	return render_template("otpauth.html",token1=t1,token2=t2)
 
 @app.route("/markattendance", methods=["GET"])
 def markattendance():
@@ -74,6 +86,23 @@ def resumeportal():
 def resumeportalpage():
 	cid=request.form['cid']
 	return render_template("instructor.html",cid=cid)
+	
+@app.route("/otpcheck", methods=["POST"])
+def otpcheck():
+	otp=request.form['otp']
+	t1=request.form['t1'].strip().encode()
+	t2=request.form['t2'].strip().encode()
+	print(t1)
+	print(t2)
+	rnum=f1.decrypt(t1).decode()
+	cotp=f2.decrypt(t2).decode()
+	if otp.strip()==cotp.strip():
+		print(rnum)
+		resp = make_response(render_template('register.html',rnum=rnum))
+		resp.set_cookie('rnum',rnum,max_age=60*60*24*365*8)
+		return resp
+	else:
+		return render_template("success.html")
 	
 @app.route("/success")
 def success():

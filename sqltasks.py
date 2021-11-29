@@ -60,3 +60,43 @@ def dropTable():
 def resetDb():
 	dropTable()
 	createTable()
+	
+def createStudentTable():
+	try:
+		cursor.execute("CREATE TABLE [Student](email VARCHAR(30) UNIQUE)")
+		cursor.commit()
+	except:
+		pass
+
+def addStudent(email):
+	try:
+		command = 'INSERT INTO [Student] VALUES (?)'	
+		cursor.execute(command,email)
+		cursor.commit()
+	except:
+		createStudentTable()
+		try:
+			command = 'INSERT INTO [Student] VALUES (?)'	
+			cursor.execute(email)
+			cursor.commit()
+		except:
+			pass
+
+
+def getEmail(reg):
+	try:
+		command ='SELECT email FROM [Student] WHERE email like ?'
+		reg='%'+reg+'%'
+		cursor.execute(command,reg)
+		retValue=cursor.fetchone()[0]
+		return retValue
+	except:
+		return "Error"
+
+def dropStudentTable():
+	cursor.execute("DROP TABLE IF EXISTS [Student]")
+	cursor.commit()
+		
+def resetStudentDb():
+	dropStudentTable()
+	createStudentTable()
