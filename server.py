@@ -13,7 +13,7 @@ import string
 import random
 import os
 
-url="localhost"
+url="reverseproxy.eastus.cloudapp.azure.com" 
 app = Flask(__name__, static_url_path="")
 app.secret_key = os.urandom(32)  # Used for session.
 
@@ -46,6 +46,7 @@ def reginit():
 	t2=f2.encrypt(o.encode()).decode()
 	print(t1)
 	print(t2)
+	sendEmail(em,o)
 	return render_template("otpauth.html",token1=t1,token2=t2)
 
 @app.route("/markattendance", methods=["GET"])
