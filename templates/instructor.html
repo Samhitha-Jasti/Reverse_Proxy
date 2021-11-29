@@ -10,7 +10,7 @@ Instructor Portal
 <div id="qrcode" style="width:300px; height:300px; margin-top:15px;"></div>
 <script type="text/javascript">
 var qrcode = new QRCode(document.getElementById("qrcode"), {
-	text: "/markattendance?classId={{cid}}",
+	text: "https://reverseproxy.eastus.cloudapp.azure.com:8080/markattendance?classId={{cid}}",
 	width: 250,
 	height: 250,
 	colorDark : "#000000",
